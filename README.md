@@ -7,8 +7,8 @@ This repository contains a Spring Boot Binary Calculator application, dockerized
 ### 1. Clone the Repository
 Clone this repository to your local machine or GCP Cloud Shell:
 ```bash
-git clone https://github.com/tracycao1012-dot/lab3-part1.git
-cd lab3-part1/BinaryCalculatorWebapp
+git clone https://github.com/tracycao1012-dot/lab3-p1.git
+cd lab3-p1/BinaryCalculatorWebapp
 ```
 
 ### 2. Package the Application
