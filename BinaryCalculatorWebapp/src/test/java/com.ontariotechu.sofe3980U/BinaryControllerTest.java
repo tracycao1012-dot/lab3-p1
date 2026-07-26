@@ -67,21 +67,21 @@ public class BinaryControllerTest {
     public void postInvalidOperator() throws Exception {
         this.mvc.perform(post("/").param("operand1", "111").param("operator", "_").param("operand2", "111"))// .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("Error"));
+                .andExpect(view().name("error"));
     }
 
     @Test
     public void postMissingOperator() throws Exception {
         this.mvc.perform(post("/").param("operand1", "111").param("operator", "").param("operand2", "111"))// .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("Error"));
+                .andExpect(view().name("error"));
     }
 
     @Test
     public void postWithNoParameters() throws Exception {
         this.mvc.perform(post("/"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("Error"));
+                .andExpect(view().name("error"));
     }
 
     /*
