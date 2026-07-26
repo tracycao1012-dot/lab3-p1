@@ -247,17 +247,15 @@ In this section, the MySQL image will be deployed over the GKE cluster using YAM
       ```
    
    5. To delete the deployment and the service, use the following command 
-       ```cmd
-      cd ~/SOFE3980U-Lab3-Part1/MySQL
-      kubectl delete -f mysql-deploy.yaml
-      kubectl delete -f mysql-service.yaml
-      ```  
+   kubectl delete -f mysql-deploy.yaml
+   kubectl delete -f mysql-service.yaml
+   ```  
 ## Deploy The Maven Project
- new Docker image will be created in this section based on a previous version of the Maven project created at the second milestone, **BinaryCalculatorWebapp**, which will be converted into a Docker image. GKE will be used to Deploy it.
+A new Docker image will be created in this section based on a previous version of the Maven project created at the second milestone, **BinaryCalculatorWebapp**, which will be converted into a Docker image. GKE will be used to Deploy it via YAML files.
 1. From the GCP console, change the current directory to the path **/BinaryCalculatorWebapp** at the cloned repository. Then, build the application to generate the WAR file. 
    ```cmd
-   cd ~/SOFE3980U-Lab3-Part1/BinaryCalculatorWebapp
-   mvn package
+   cd ~/lab3-part1/BinaryCalculatorWebapp
+   mvn clean package
    ```
 2. The path also contains another file, **Dockerfile**. It contains the steps necessary to create the docker image. The steps can be summarized as:
    * line 1: starting with a base image.
@@ -267,7 +265,7 @@ In this section, the MySQL image will be deployed over the GKE cluster using YAM
    
       ![Dockerfile](figures/d1.JPG)         
       
-3. the generated Docker image has to be stored globally. Thus, a Docker repo will be created in the GCP project.
+3. The generated Docker image has to be stored globally. Thus, a Docker repo will be created in the GCP project.
    * Search for **Artifact Registry**
      
      ![Artifact Registry](figures/d2_v2.jpg)         
@@ -276,7 +274,7 @@ In this section, the MySQL image will be deployed over the GKE cluster using YAM
 
      ![create a new repo](figures/d3_v2.jpg)
      
-   * Name it **sofe3980u** and ensure that the type is set to **Docker**. Set the region to "us-central1 (Iowa)". Finally, press **create**.
+   * Name it **lab3-part1** and ensure that the type is set to **Docker**. Set the region to "us-central1 (Iowa)". Finally, press **create**.
 
      ![create a new repo (2)](figures/d4.jpg)
 
@@ -289,40 +287,41 @@ In this section, the MySQL image will be deployed over the GKE cluster using YAM
     > 
     > The screenshot above may still display `northamerica-northeast2 (Toronto)`, but you should select **us-central1 (Iowa)** instead.
 
-   * open the **sofe3980u** repository and  copy the repository path.
+   * Open the **lab3-part1** repository and copy the repository path.
 
      ![create a new repo (2)](figures/d5.jpg)
 
 
 4. Grant GKE permission to pull images from Artifact Registry
    ```
-   gcloud projects add-iam-policy-binding <your-project-id> ^
-     --member="serviceAccount:$(gcloud projects describe <your-project-id> --format='value(projectNumber)')-compute@developer.gserviceaccount.com" ^
+   gcloud projects add-iam-policy-binding <your-project-id> \
+     --member="serviceAccount:$(gcloud projects describe <your-project-id> --format='value(projectNumber)')-compute@developer.gserviceaccount.com" \
      --role="roles/artifactregistry.reader"
    ```
 
-5. To create a docker image using the **Dockerfile**, run the following command after replacing **\<repo-path\>** with the repository path you already copied in the previous step.
+5. To create a docker image using the **Dockerfile**, run the following command, replacing **\<your-project-id\>** with your actual GCP Project ID.
    ```cmd
-   cd ~/SOFE3980U-Lab3-Part1/BinaryCalculatorWebapp
-   docker build -t <repo-path>/binarycalculator .
+   cd ~/lab3-part1/BinaryCalculatorWebapp
+   docker build -t us-central1-docker.pkg.dev/<your-project-id>/lab3-part1/binarycalculator .
    ```
    
-6. To use the image globally, it should be pushed into the **sofe3980u** repository in the **Artifact registry**.
-      ```cmd
-      docker push <repo-path>/binarycalculator
-      ```
-      
-7. To deploy the image using GKE
+6. To use the image globally, it should be pushed into the **lab3-part1** repository in the **Artifact registry**.
    ```cmd
-   kubectl create deployment binarycalculator-deployment --image <repo-path>/binarycalculator --port=8080 
+   docker push us-central1-docker.pkg.dev/<your-project-id>/lab3-part1/binarycalculator
+   ```
+      
+7. To deploy the image using GKE via YAML files
+   ```cmd
+   cd ~/lab3-part1/BinaryCalculatorWebapp/deployment
+   kubectl apply -f binarycalculatorwebapp-deploy.yaml
+   kubectl apply -f binarycalculatorwebapp-service.yaml
    ```
 
-8. To assign an IP to the deployment
+8. Get the IP associated with the service to access your application.
    ```cmd
-   kubectl expose deployment binarycalculator-deployment --type=LoadBalancer --name=binarycalculator-service 
+   kubectl get service binary-calculator-webapp-service --watch
    ```
-   
-9. Get the IP associated with the service and access the application with that IP at port 8080 using the **http** protocol.
+   Once you get the external IP, access the application by visiting `http://<EXTERNAL-IP>` in your browser.
 
 ## Discussion:
 1. Briefly summarize what you have learned about docker and Kubernetes, including their terminologies and descriptions.
