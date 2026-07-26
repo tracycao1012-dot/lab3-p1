@@ -13,7 +13,7 @@ spec:
         app: binary-calculator-webapp
     spec:
       containers:
-        - image: us-central1-docker.pkg.dev/<your-project-id>/lab3-part1/binarycalculator
+        - image: us-central1-docker.pkg.dev/project-fac1ad71-1dcd-49c3-bb0/sofe3980u/binarycalculator
           name: binary-calculator-webapp
           ports:
             - containerPort: 8080
